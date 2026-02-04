@@ -1,0 +1,50 @@
+cd "C:/Users/User/Desktop/Fumitaka/1. current research/00000a energy/1. uncertainty/analysis_STATA"
+import excel "data_set.xlsx", firstrow
+tsset year
+
+generate trend = _n
+matrix mout=J(6,1,.)
+
+regress rec1 rec2 rec3 trend
+
+
+local k=0
+
+forvalues i=1/6 {
+capture drop y1`i' x1`i' x2`i' x3`i'
+capture drop y1`i'_L x1`i'_L x2`i'_L x3`i'_L
+capture drop y1`i'_D x1`i'_D x2`i'_D x3`i'_D
+
+local ++k
+
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+
+regress y1`i'_D x1`i'_D x2`i'_D x3`i'_D trend y1`i'_L x1`i'_L x2`i'_L x3`i'_L
+scalar rss1=e(rss)
+display(rss1)
+regress y1`i'_D x1`i'_D x2`i'_D x3`i'_D
+scalar rss2=e(rss)
+display(rss2)
+scalar ff_dem=(rss2-rss1)/5
+scalar ff_num=rss1/25
+scalar ff=ff_dem/ff_num
+
+regress y1`i'_D x1`i'_D x2`i'_D x3`i'_D trend y1`i'_L x1`i'_L x2`i'_L x3`i'_L
+test x1`i'_L x2`i'_L x3`i'_L
+ereturn list
+matrix mout[`i',1]=ff
+}
+matrix list mout

@@ -1,0 +1,92 @@
+@ ==============================================================@
+@ OxGauss program for ADF		        @ 
+@ ============================================================= @
+@ Input:      		y: Tx1 vector of time series        	@
+@ Output:    		ADF statistics	@
+@ Subprogram: 		none					@
+@ Lag length:		1					@
+@ ==============================================================@
+
+closeall;
+
+output file=adf_out(a).txt reset;
+
+@ =====data input================================================@
+
+load data[35,54]=data1.txt;
+
+rr=rows(data);
+cc=cols(data);
+
+@ =====ARDL data preparation================================================	@
+
+mout=zeros(6,1);
+
+nc=1;
+do while nc<=6;
+/*
+nc=6 number of country; 
+nc==1 indonesia
+nc==2 malaysia;
+nc==3 philippines;
+nc==4 singapore;
+nc==5 thailand;
+nc==6 vietanm;   
+*/
+
+/*
+np=4 number of variable; 
++1 rec;
++7 gdp;
++7 fdi;
++9 top;
+*/
+
+y0=data[1:rr, (nc-1)*9+1];
+x1=data[1:rr, (nc-1)*9+7];
+x2=data[1:rr, (nc-1)*9+8];
+x3=data[1:rr, (nc-1)*9+9];
+
+
+@ =====ARDL estimation ============================================ @
+k=1;
+LL=1;
+y=y0;
+n=rows(y);
+dy1=y0[2:n]-y0[1:n-1];
+dx1=x1[2:n]-x1[1:n-1];
+dx2=x2[2:n]-x2[1:n-1];
+dx3=x3[2:n]-x3[1:n-1];
+const=ones(n,1);
+trend=seqa(1,1,n);
+x=dx1[k:n-1]~dx2[k:n-1]~dx3[k:n-1]~const[k+1:n]~trend[k+1:n]~y0[k:n-1]~x1[k:n-1]~x2[k:n-1]~x3[k:n-1];
+x1=dx1[k:n-1]~dx2[k:n-1]~dx3[k:n-1]~const[k+1:n];
+y=dy1[k:n-1];
+invx=inv(x'x);
+beta=invx*x'y;
+e=y-x*beta;
+ee=e'e;
+    invx1=inv(x1'x1);
+    beta1=invx1*x1'y;
+    e1=y-x1*beta1;
+    ee1=e1'e1;
+    f_num=(ee1-ee)/(cols(x)-cols(x1));
+    f_den=ee/(rows(y)-cols(x));
+    ff=f_num/f_den;
+ssr=e'e;
+var=(e'e/(rows(y)-cols(x)))*invx;
+sd=sqrt(diag(var));
+t=beta./sd;
+
+mout[nc,1]=ff;
+
+"beta=" beta;
+"sd=" sd;
+"Bounds test (BT) statistics=" ff;
+
+nc=nc+1;
+endo;
+
+"results=" mout;
+
+@ =====End of calculation================================================	@

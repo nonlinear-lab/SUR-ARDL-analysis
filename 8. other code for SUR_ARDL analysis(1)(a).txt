@@ -1,0 +1,153 @@
+cd "C:/Users/User/Desktop/Fumitaka/1. current research/00000a energy/1. uncertainty/analysis_STATA"
+import excel "data_set.xlsx", firstrow
+tsset year
+
+generate trend = _n
+matrix mout=J(6,1,.)
+
+local i=1
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+local i=2
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+local i=3
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+local i=4
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+local i=5
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+local i=6
+generate y1`i'=rec`i'	
+generate x1`i'=gdp`i'
+generate x2`i'=fdi`i'
+generate x3`i'=to`i'
+generate y1`i'_L=L.y1`i'
+generate x1`i'_L=L.x1`i'
+generate x2`i'_L=L.x2`i'
+generate x3`i'_L=L.x3`i'
+generate y1`i'_D=D.y1`i'
+generate x1`i'_D=D.x1`i'
+generate x2`i'_D=D.x2`i'
+generate x3`i'_D=D.x3`i'
+
+sureg(y11_D x11_D x21_D x31_D trend y11_L x11_L x21_L x31_L)(y12_D x12_D x22_D x32_D trend y12_L x12_L x22_L x32_L)(y13_D x13_D x23_D x33_D trend y13_L x13_L x23_L x33_L)(y14_D x14_D x24_D x34_D trend y14_L x14_L x24_L x34_L)(y15_D x15_D x25_D x35_D trend y15_L x15_L x25_L x35_L)(y16_D x16_D x26_D x36_D trend y16_L x16_L x26_L x36_L)
+predict resid11,residual equation(y11_D)
+generate resid11_sq=resid11^2
+egen rss11=total(resid11_sq) 
+predict resid12,residual equation(y12_D)
+generate resid12_sq=resid12^2
+egen rss12=total(resid12_sq) 
+predict resid13,residual equation(y13_D)
+generate resid13_sq=resid13^2
+egen rss13=total(resid13_sq) 
+predict resid14,residual equation(y14_D)
+generate resid14_sq=resid14^2
+egen rss14=total(resid14_sq) 
+predict resid15,residual equation(y15_D)
+generate resid15_sq=resid15^2
+egen rss15=total(resid15_sq) 
+predict resid16,residual equation(y16_D)
+generate resid16_sq=resid16^2
+egen rss16=total(resid16_sq) 
+
+sureg(y11_D x11_D x21_D x31_D)(y12_D x12_D x22_D x32_D)(y13_D x13_D x23_D x33_D)(y14_D x14_D x24_D x34_D)(y15_D x15_D x25_D x35_D)(y16_D x16_D x26_D x36_D)
+predict resid21,residual equation(y11_D)
+generate resid21_sq=resid21^2
+egen rss21=total(resid21_sq) 
+predict resid22,residual equation(y12_D)
+generate resid22_sq=resid22^2
+egen rss22=total(resid22_sq) 
+predict resid23,residual equation(y13_D)
+generate resid23_sq=resid23^2
+egen rss23=total(resid23_sq) 
+predict resid24, residual equation(y14_D)
+generate resid24_sq=resid24^2
+egen rss24=total(resid24_sq) 
+predict resid25,residual equation(y15_D)
+generate resid25_sq=resid25^2
+egen rss25=total(resid25_sq) 
+predict resid26,residual equation(y16_D)
+generate resid26_sq=resid26^2
+egen rss26=total(resid26_sq) 
+
+scalar ff_dem1=(rss21-rss11)/5
+scalar ff_num1=rss11/25
+scalar ff1=ff_dem1/ff_num1
+scalar ff_dem2=(rss22-rss12)/5
+scalar ff_num2=rss12/25
+scalar ff2=ff_dem2/ff_num2
+scalar ff_dem3=(rss23-rss13)/5
+scalar ff_num3=rss13/25
+scalar ff3=ff_dem3/ff_num3
+scalar ff_dem4=(rss24-rss14)/5
+scalar ff_num4=rss14/25
+scalar ff4=ff_dem4/ff_num4
+scalar ff_dem5=(rss25-rss15)/5
+scalar ff_num5=rss15/25
+scalar ff5=ff_dem5/ff_num5
+scalar ff_dem6=(rss26-rss16)/5
+scalar ff_num6=rss16/25
+scalar ff6=ff_dem6/ff_num6
+
+matrix mout[1,1]=ff1
+matrix mout[2,1]=ff2
+matrix mout[3,1]=ff3
+matrix mout[4,1]=ff4
+matrix mout[5,1]=ff5
+matrix mout[6,1]=ff6
+
+matrix list mout

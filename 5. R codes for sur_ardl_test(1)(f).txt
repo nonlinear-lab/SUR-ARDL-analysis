@@ -1,0 +1,466 @@
+library(dplyr)
+library(stats)
+library(tidyverse)
+library(readxl)
+library(systemfit)
+library(car)
+library(ARDL)
+
+setwd("C:/R")
+#setwd("C:/Users/User/Desktop/Fumitaka/1. current research/00000a energy/1. uncertainty/anaysis_R")
+data1<-read.csv("data1_energy.csv",header=TRUE)
+mout<-matrix(NA_real_, nrow=6,ncol=6)
+
+# level variable
+rec1<-data1$rec1
+gdp1<-data1$gdp1
+fdi1<-data1$fdi1
+top1<-data1$to1
+rec2<-data1$rec2
+gdp2<-data1$gdp2
+fdi2<-data1$fdi2
+top2<-data1$to2
+rec3<-data1$rec3
+gdp3<-data1$gdp3
+fdi3<-data1$fdi3
+top3<-data1$to3
+rec4<-data1$rec4
+gdp4<-data1$gdp4
+fdi4<-data1$fdi4
+top4<-data1$to4
+rec5<-data1$rec5
+gdp5<-data1$gdp5
+fdi5<-data1$fdi5
+top5<-data1$to5
+rec6<-data1$rec6
+gdp6<-data1$gdp6
+fdi6<-data1$fdi6
+top6<-data1$to6
+
+dat2<-cbind(rec1,gdp1,fdi1,top1,rec2,gdp2,fdi2,top2,rec3,gdp3,fdi3,top3,rec4,gdp4,fdi4,top4,rec5,gdp5,fdi5,top5,rec6,gdp6,fdi6,top6)
+dat2<-as.data.frame(dat2)
+dat2$trend<-1:nrow(dat2)
+
+# lagged variable
+rec_L1<-dplyr::lag(rec1,k=1)
+gdp_L1<-dplyr::lag(gdp1,k=1)
+fdi_L1<-dplyr::lag(fdi1,k=1)
+top_L1<-dplyr::lag(top1,k=1)
+rec_L2<-dplyr::lag(rec2,k=1)
+gdp_L2<-dplyr::lag(gdp2,k=1)
+fdi_L2<-dplyr::lag(fdi2,k=1)
+top_L2<-dplyr::lag(top2,k=1)
+rec_L3<-dplyr::lag(rec3,k=1)
+gdp_L3<-dplyr::lag(gdp3,k=1)
+fdi_L3<-dplyr::lag(fdi3,k=1)
+top_L3<-dplyr::lag(top3,k=1)
+rec_L4<-dplyr::lag(rec4,k=1)
+gdp_L4<-dplyr::lag(gdp4,k=1)
+fdi_L4<-dplyr::lag(fdi4,k=1)
+top_L4<-dplyr::lag(top4,k=1)
+rec_L5<-dplyr::lag(rec5,k=1)
+gdp_L5<-dplyr::lag(gdp5,k=1)
+fdi_L5<-dplyr::lag(fdi5,k=1)
+top_L5<-dplyr::lag(top5,k=1)
+rec_L6<-dplyr::lag(rec6,k=1)
+gdp_L6<-dplyr::lag(gdp6,k=1)
+fdi_L6<-dplyr::lag(fdi6,k=1)
+top_L6<-dplyr::lag(top6,k=1)
+
+# differenced variable
+rec_D1<-diff(rec1)
+gdp_D1<-diff(gdp1)
+fdi_D1<-diff(fdi1)
+top_D1<-diff(top1)
+rec_D2<-diff(rec2)
+gdp_D2<-diff(gdp2)
+fdi_D2<-diff(fdi2)
+top_D2<-diff(top2)
+rec_D3<-diff(rec3)
+gdp_D3<-diff(gdp3)
+fdi_D3<-diff(fdi3)
+top_D3<-diff(top3)
+rec_D4<-diff(rec4)
+gdp_D4<-diff(gdp4)
+fdi_D4<-diff(fdi4)
+top_D4<-diff(top4)
+rec_D5<-diff(rec5)
+gdp_D5<-diff(gdp5)
+fdi_D5<-diff(fdi5)
+top_D5<-diff(top5)
+rec_D6<-diff(rec6)
+gdp_D6<-diff(gdp6)
+fdi_D6<-diff(fdi6)
+top_D6<-diff(top6)
+
+# shorten variable
+rec1<-rec1[2:35]
+gdp1<-gdp1[2:35]
+fdi1<-fdi1[2:35]
+top1<-top1[2:35]
+rec2<-rec2[2:35]
+gdp2<-gdp2[2:35]
+fdi2<-fdi2[2:35]
+top2<-top2[2:35]
+rec3<-rec3[2:35]
+gdp3<-gdp3[2:35]
+fdi3<-fdi3[2:35]
+top3<-top3[2:35]
+rec4<-rec4[2:35]
+gdp4<-gdp4[2:35]
+fdi4<-fdi4[2:35]
+top4<-top4[2:35]
+rec5<-rec5[2:35]
+gdp5<-gdp5[2:35]
+fdi5<-fdi5[2:35]
+top5<-top5[2:35]
+rec6<-rec6[2:35]
+gdp6<-gdp6[2:35]
+fdi6<-fdi6[2:35]
+top6<-top6[2:35]
+
+rec_L1<-rec_L1[2:35]
+gdp_L1<-gdp_L1[2:35]
+fdi_L1<-fdi_L1[2:35]
+top_L1<-top_L1[2:35]
+rec_L2<-rec_L2[2:35]
+gdp_L2<-gdp_L2[2:35]
+fdi_L2<-fdi_L2[2:35]
+top_L2<-top_L2[2:35]
+rec_L3<-rec_L3[2:35]
+gdp_L3<-gdp_L3[2:35]
+fdi_L3<-fdi_L3[2:35]
+top_L3<-top_L3[2:35]
+rec_L4<-rec_L4[2:35]
+gdp_L4<-gdp_L4[2:35]
+fdi_L4<-fdi_L4[2:35]
+top_L4<-top_L4[2:35]
+rec_L5<-rec_L5[2:35]
+gdp_L5<-gdp_L5[2:35]
+fdi_L5<-fdi_L5[2:35]
+top_L5<-top_L5[2:35]
+rec_L6<-rec_L6[2:35]
+gdp_L6<-gdp_L6[2:35]
+fdi_L6<-fdi_L6[2:35]
+top_L6<-top_L6[2:35]
+
+dat1<-na.omit(cbind(rec1,rec_D1,rec_L1,rec2,rec_D2,rec_L2,rec3,rec_D3,rec_L3,rec4,rec_D4,rec_L4,rec5,rec_D5,rec_L5,rec6,rec_D6,rec_L6,
+		    gdp1,gdp_D1,gdp_L1,gdp2,gdp_D2,gdp_L2,gdp3,gdp_D3,gdp_L3,gdp4,gdp_D4,gdp_L4,gdp5,gdp_D5,gdp_L5,gdp6,gdp_D6,gdp_L6,
+		    fdi1,fdi_D1,fdi_L1,fdi2,fdi_D2,fdi_L2,fdi3,fdi_D3,fdi_L3,fdi4,fdi_D4,fdi_L4,fdi5,fdi_D5,fdi_L5,fdi6,fdi_D6,fdi_L6,
+		    top1,top_D1,top_L1,top2,top_D2,top_L2,top3,top_D3,top_L3,top4,top_D4,top_L4,top5,top_D5,top_L5,top6,top_D6,top_L6))
+dat1<-as.data.frame(dat1)
+dat1$trend<-1:nrow(dat1) 
+trend<-dat1$trend
+
+# time-series approach
+
+ardl1<-lm(rec_D1~gdp_D1+fdi_D1+top_D1+trend+rec_L1+gdp_L1+fdi_L1+top_L1, data=dat1)
+s1<-summary(ardl1) 
+wald1<-car::linearHypothesis(
+	ardl1,
+  	c(
+  	"trend=0",
+  	"rec_L1=0", 
+  	"gdp_L1=0", 
+  	"fdi_L1=0", 
+  	"top_L1=0" 
+   	)
+)
+tab1<-as.data.frame(wald1)
+mout[1,1]<-tab1$F[2]
+
+ardl2<-lm(rec_D2~gdp_D2+fdi_D2+top_D2+trend+rec_L2+gdp_L2+fdi_L2+top_L2, data=dat1)
+wald2<-car::linearHypothesis(
+	ardl2,
+  	c(
+  	"trend=0",
+  	"rec_L2=0", 
+  	"gdp_L2=0", 
+  	"fdi_L2=0", 
+  	"top_L2=0" 
+   	)
+)
+tab2<-as.data.frame(wald2)
+mout[2,1]<-tab2$F[2]
+
+ardl3<-lm(rec_D3~gdp_D3+fdi_D3+top_D3+trend+rec_L3+gdp_L3+fdi_L3+top_L3, data=dat1)
+wald3<-car::linearHypothesis(
+	ardl3,
+  	c(
+  	"trend=0",
+  	"rec_L3=0", 
+  	"gdp_L3=0", 
+  	"fdi_L3=0", 
+  	"top_L3=0" 
+   	)
+)
+tab3<-as.data.frame(wald3)
+mout[3,1]<-tab3$F[2]
+
+ardl4<-lm(rec_D4~gdp_D4+fdi_D4+top_D4+trend+rec_L4+gdp_L4+fdi_L4+top_L4, data=dat1)
+wald4<-car::linearHypothesis(
+	ardl4,
+  	c(
+  	"trend=0",
+  	"rec_L4=0", 
+  	"gdp_L4=0", 
+  	"fdi_L4=0", 
+  	"top_L4=0" 
+   	)
+)
+tab4<-as.data.frame(wald4)
+mout[4,1]<-tab4$F[2]
+
+ardl5<-lm(rec_D5~gdp_D5+fdi_D5+top_D5+trend+rec_L5+gdp_L5+fdi_L5+top_L5, data=dat1)
+wald5<-car::linearHypothesis(
+	ardl5,
+  	c(
+  	"trend=0",
+  	"rec_L5=0", 
+  	"gdp_L5=0", 
+  	"fdi_L5=0", 
+  	"top_L5=0" 
+   	)
+)
+tab5<-as.data.frame(wald5)
+mout[5,1]<-tab5$F[2]
+
+ardl6<-lm(rec_D6~gdp_D6+fdi_D6+top_D6+trend+rec_L6+gdp_L6+fdi_L6+top_L6, data=dat1)
+wald6<-car::linearHypothesis(
+	ardl6,
+  	c(
+  	"trend=0",
+  	"rec_L6=0", 
+  	"gdp_L6=0", 
+  	"fdi_L6=0", 
+  	"top_L6=0" 
+   	)
+)
+tab6<-as.data.frame(wald6)
+mout[6,1]<-tab6$F[2]
+
+
+# system approach
+
+equation<- list(
+equation1=rec_D1~gdp_D1+fdi_D1+top_D1+trend+rec_L1+gdp_L1+fdi_L1+top_L1,
+equation2=rec_D2~gdp_D2+fdi_D2+top_D2+trend+rec_L2+gdp_L2+fdi_L2+top_L2,
+equation3=rec_D3~gdp_D3+fdi_D3+top_D3+trend+rec_L3+gdp_L3+fdi_L3+top_L3,
+equation4=rec_D4~gdp_D4+fdi_D4+top_D4+trend+rec_L4+gdp_L4+fdi_L4+top_L4,
+equation5=rec_D5~gdp_D5+fdi_D5+top_D5+trend+rec_L5+gdp_L5+fdi_L5+top_L5,
+equation6=rec_D6~gdp_D6+fdi_D6+top_D6+trend+rec_L6+gdp_L6+fdi_L6+top_L6)
+ardl_sys<-systemfit(equation,method="SUR",data = dat1)
+wald1<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation1_trend=0",
+  	"equation1_rec_L1=0", 
+  	"equation1_gdp_L1=0", 
+  	"equation1_fdi_L1=0", 
+  	"equation1_top_L1=0" 
+   	), test="F"
+)
+tab1<-as.data.frame(wald1)
+mout[1,2]<-tab1$F[2]
+wald2<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation2_trend=0",
+  	"equation2_rec_L2=0", 
+  	"equation2_gdp_L2=0", 
+  	"equation2_fdi_L2=0", 
+  	"equation2_top_L2=0" 
+   	), test="F"
+)
+tab2<-as.data.frame(wald2)
+mout[2,2]<-tab2$F[2]
+wald3<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation3_trend=0",
+  	"equation3_rec_L3=0", 
+  	"equation3_gdp_L3=0", 
+  	"equation3_fdi_L3=0", 
+  	"equation3_top_L3=0" 
+   	), test="F"
+)
+tab3<-as.data.frame(wald3)
+mout[3,2]<-tab3$F[2]
+wald4<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation4_trend=0",
+  	"equation4_rec_L4=0", 
+  	"equation4_gdp_L4=0", 
+  	"equation4_fdi_L4=0", 
+  	"equation4_top_L4=0" 
+   	), test="F"
+)
+tab4<-as.data.frame(wald4)
+mout[4,2]<-tab4$F[2]
+wald5<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation5_trend=0",
+  	"equation5_rec_L5=0", 
+  	"equation5_gdp_L5=0", 
+  	"equation5_fdi_L5=0", 
+  	"equation5_top_L5=0" 
+   	), test="F"
+)
+tab5<-as.data.frame(wald5)
+mout[5,2]<-tab5$F[2]
+wald6<-car::linearHypothesis(
+	ardl_sys,
+  	c(
+  	"equation6_trend=0",
+  	"equation6_rec_L6=0", 
+  	"equation6_gdp_L6=0", 
+  	"equation6_fdi_L6=0", 
+  	"equation6_top_L6=0" 
+   	), test="F"
+)
+tab6<-as.data.frame(wald6)
+mout[6,2]<-tab6$F[2]
+
+# bounds test approach (case 3)
+ardl_11<-ardl(rec1~gdp1+fdi1+top1,data=dat2,order=c(1,1,1,1))
+bound_11<-bounds_f_test(ardl_11,case=3)
+mout[1,3]=bound_11$tab$statistic
+ardl_12<-ardl(rec2~gdp2+fdi2+top2,data=dat2,order=c(1,1,1,1))
+bound_12<-bounds_f_test(ardl_12,case=3)
+mout[2,3]=bound_12$tab$statistic
+ardl_13<-ardl(rec3~gdp3+fdi3+top3,data=dat2,order=c(1,1,1,1))
+bound_13<-bounds_f_test(ardl_13,case=3)
+mout[3,3]=bound_13$tab$statistic
+ardl_14<-ardl(rec4~gdp4+fdi4+top4,data=dat2,order=c(1,1,1,1))
+bound_14<-bounds_f_test(ardl_14,case=3)
+mout[4,3]=bound_14$tab$statistic
+ardl_15<-ardl(rec5~gdp5+fdi5+top5,data=dat2,order=c(1,1,1,1))
+bound_15<-bounds_f_test(ardl_15,case=3)
+mout[5,3]=bound_15$tab$statistic
+ardl_16<-ardl(rec6~gdp6+fdi6+top6,data=dat2,order=c(1,1,1,1))
+bound_16<-bounds_f_test(ardl_16,case=3)
+mout[6,3]=bound_16$tab$statistic
+
+# bounds test approach (case 4)
+ardl_21<-ardl(rec1~gdp1+fdi1+top1+trend(rec1),data=dat2,order=c(1,1,1,1))
+bound_21<-bounds_f_test(ardl_21,case=4)
+mout[1,4]=bound_21$tab$statistic
+ardl_22<-ardl(rec2~gdp2+fdi2+top2+trend(rec2),data=dat2,order=c(1,1,1,1))
+bound_22<-bounds_f_test(ardl_22,case=4)
+mout[2,4]=bound_22$tab$statistic
+ardl_23<-ardl(rec3~gdp3+fdi3+top3+trend(rec3),data=dat2,order=c(1,1,1,1))
+bound_23<-bounds_f_test(ardl_23,case=4)
+mout[3,4]=bound_23$tab$statistic
+ardl_24<-ardl(rec4~gdp4+fdi4+top4+trend(rec4),data=dat2,order=c(1,1,1,1))
+bound_24<-bounds_f_test(ardl_24,case=4)
+mout[4,4]=bound_24$tab$statistic
+ardl_25<-ardl(rec5~gdp5+fdi5+top5+trend(rec5),data=dat2,order=c(1,1,1,1))
+bound_25<-bounds_f_test(ardl_25,case=4)
+mout[5,4]=bound_25$tab$statistic
+ardl_26<-ardl(rec6~gdp6+fdi6+top6+trend(rec6),data=dat2,order=c(1,1,1,1))
+bound_26<-bounds_f_test(ardl_26,case=4)
+mout[6,4]=bound_26$tab$statistic
+
+# manual calculation (bound_test approach: case 3)
+ardl11<-lm(rec_D1~gdp_D1+fdi_D1+top_D1+rec_L1+gdp_L1+fdi_L1+top_L1, data=dat1)
+ssr11<-deviance(ardl11)
+ardl12<-lm(rec_D1~gdp_D1+fdi_D1+top_D1, data=dat1)
+ssr12<-deviance(ardl12)
+ff_num1<-(ssr12-ssr11)/4
+ff_den1<-(ssr11)/26
+ff1<-ff_num1/ff_den1
+mout[1,5]<-ff1
+ardl21<-lm(rec_D2~gdp_D2+fdi_D2+top_D2+rec_L2+gdp_L2+fdi_L2+top_L2, data=dat1)
+ssr21<-deviance(ardl21)
+ardl22<-lm(rec_D2~gdp_D2+fdi_D2+top_D2, data=dat1)
+ssr22<-deviance(ardl22)
+ff_num2<-(ssr22-ssr21)/4
+ff_den2<-(ssr21)/26
+ff2<-ff_num2/ff_den2
+mout[2,5]<-ff2
+ardl31<-lm(rec_D3~gdp_D3+fdi_D3+top_D3+rec_L3+gdp_L3+fdi_L3+top_L3, data=dat1)
+ssr31<-deviance(ardl31)
+ardl32<-lm(rec_D3~gdp_D3+fdi_D3+top_D3, data=dat1)
+ssr32<-deviance(ardl32)
+ff_num3<-(ssr32-ssr31)/4
+ff_den3<-(ssr31)/26
+ff3<-ff_num3/ff_den3
+mout[3,5]<-ff3
+ardl41<-lm(rec_D4~gdp_D4+fdi_D4+top_D4+rec_L4+gdp_L4+fdi_L4+top_L4, data=dat1)
+ssr41<-deviance(ardl41)
+ardl42<-lm(rec_D4~gdp_D4+fdi_D4+top_D4, data=dat1)
+ssr42<-deviance(ardl42)
+ff_num4<-(ssr42-ssr41)/4
+ff_den4<-(ssr41)/26
+ff4<-ff_num4/ff_den4
+mout[4,5]<-ff4
+ardl51<-lm(rec_D5~gdp_D5+fdi_D5+top_D5+rec_L5+gdp_L5+fdi_L5+top_L5, data=dat1)
+ssr51<-deviance(ardl51)
+ardl52<-lm(rec_D5~gdp_D5+fdi_D5+top_D5, data=dat1)
+ssr52<-deviance(ardl52)
+ff_num5<-(ssr52-ssr51)/4
+ff_den5<-(ssr51)/26
+ff5<-ff_num5/ff_den5
+mout[5,5]<-ff5
+ardl61<-lm(rec_D6~gdp_D6+fdi_D6+top_D6+rec_L6+gdp_L6+fdi_L6+top_L6, data=dat1)
+ssr61<-deviance(ardl61)
+ardl62<-lm(rec_D6~gdp_D6+fdi_D6+top_D6, data=dat1)
+ssr62<-deviance(ardl62)
+ff_num6<-(ssr62-ssr61)/4
+ff_den6<-(ssr61)/26
+ff6<-ff_num6/ff_den6
+mout[6,5]<-ff6
+
+# manual calculation (bound test approach case=4)
+ardl11<-lm(rec_D1~gdp_D1+fdi_D1+top_D1+trend+rec_L1+gdp_L1+fdi_L1+top_L1, data=dat1)
+ssr11<-deviance(ardl11)
+ardl12<-lm(rec_D1~gdp_D1+fdi_D1+top_D1, data=dat1)
+ssr12<-deviance(ardl12)
+ff_num1<-(ssr12-ssr11)/5
+ff_den1<-(ssr11)/25
+ff1<-ff_num1/ff_den1
+mout[1,6]<-ff1
+ardl21<-lm(rec_D2~gdp_D2+fdi_D2+top_D2+trend+rec_L2+gdp_L2+fdi_L2+top_L2, data=dat1)
+ssr21<-deviance(ardl21)
+ardl22<-lm(rec_D2~gdp_D2+fdi_D2+top_D2, data=dat1)
+ssr22<-deviance(ardl22)
+ff_num2<-(ssr22-ssr21)/5
+ff_den2<-(ssr21)/25
+ff2<-ff_num2/ff_den2
+mout[2,6]<-ff2
+ardl31<-lm(rec_D3~gdp_D3+fdi_D3+top_D3+trend+rec_L3+gdp_L3+fdi_L3+top_L3, data=dat1)
+ssr31<-deviance(ardl31)
+ardl32<-lm(rec_D3~gdp_D3+fdi_D3+top_D3, data=dat1)
+ssr32<-deviance(ardl32)
+ff_num3<-(ssr32-ssr31)/5
+ff_den3<-(ssr31)/25
+ff3<-ff_num3/ff_den3
+mout[3,6]<-ff3
+ardl41<-lm(rec_D4~gdp_D4+fdi_D4+top_D4+trend+rec_L4+gdp_L4+fdi_L4+top_L4, data=dat1)
+ssr41<-deviance(ardl41)
+ardl42<-lm(rec_D4~gdp_D4+fdi_D4+top_D4, data=dat1)
+ssr42<-deviance(ardl42)
+ff_num4<-(ssr42-ssr41)/5
+ff_den4<-(ssr41)/25
+ff4<-ff_num4/ff_den4
+mout[4,6]<-ff4
+ardl51<-lm(rec_D5~gdp_D5+fdi_D5+top_D5+trend+rec_L5+gdp_L5+fdi_L5+top_L5, data=dat1)
+ssr51<-deviance(ardl51)
+ardl52<-lm(rec_D5~gdp_D5+fdi_D5+top_D5, data=dat1)
+ssr52<-deviance(ardl52)
+ff_num5<-(ssr52-ssr51)/5
+ff_den5<-(ssr51)/25
+ff5<-ff_num5/ff_den5
+mout[5,6]<-ff5
+ardl61<-lm(rec_D6~gdp_D6+fdi_D6+top_D6+trend+rec_L6+gdp_L6+fdi_L6+top_L6, data=dat1)
+ssr61<-deviance(ardl61)
+ardl62<-lm(rec_D6~gdp_D6+fdi_D6+top_D6, data=dat1)
+ssr62<-deviance(ardl62)
+ff_num6<-(ssr62-ssr61)/5
+ff_den6<-(ssr61)/25
+ff6<-ff_num6/ff_den6
+mout[6,6]<-ff6
+
+print(mout)
